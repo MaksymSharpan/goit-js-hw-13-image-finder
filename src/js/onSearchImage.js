@@ -1,5 +1,6 @@
 const debounce = require('lodash.debounce');
 const basicLightbox = require('basiclightbox');
+import 'basiclightbox/dist/basicLightbox.min.css';
 import NewsApiService from './apiService';
 import template from '../template/image-card.hbs';
 import { postError } from './pnotify';
@@ -10,18 +11,16 @@ const loadMoreBtn = document.querySelector('[data-action="load more"]');
 const clearPageBtn = document.querySelector('[data-action="clear page"]');
 
 const DELAY = 1000;
-// let currentShowImgIndex = null;
 const newsApiService = new NewsApiService();
 
 inputRef.addEventListener('input', debounce(onSearch, DELAY));
 loadMoreBtn.addEventListener('click', onLoadMore);
 clearPageBtn.addEventListener('click', clearPage);
 clearPageBtn.addEventListener('click', clearInput);
+containerRef.addEventListener('click', onLargeImage);
 
 loadMoreBtn.classList.add('is-hidden');
 clearPageBtn.classList.add('is-hidden');
-
-// containerRef.addEventListener('click', showBigImg);
 
 function onSearch(event) {
   event.preventDefault();
@@ -36,7 +35,9 @@ function onSearch(event) {
 }
 
 function onLoadMore() {
-  newsApiService.fetchArticles().then(renderPage);
+  // const lastCard = document.querySelector('.photo-card:last-child');
+
+  newsApiService.fetchArticles().then(renderPage).then(scrollDown);
 }
 
 function renderPage(hits) {
@@ -55,25 +56,18 @@ function renderPage(hits) {
     console.log('catch');
     return postError('Некорректный запрос!');
   }
-
-  // const largeImageUrl = hits.map((item, index) => {
-  //   console.log(item, index);
-  //   return item, index;
-  // });
 }
+function scrollDown() {
+  // const windowCoords = document.documentElement.clientHeight;
+  const lastCard = document.querySelector('.photo-card:last-child');
 
-// function scrollDown() {
-//   var windowCoords = document.documentElement.clientHeight;
-//   (function scroll() {
-//     if (window.pageYOffset < windowCoords) {
-//       window.scrollBy(0, 20);
-//       setTimeout(scroll, 0);
-//     }
-//     if (window.pageYOffset > windowCoords) {
-//       window.scrollTo(0, windowCoords);
-//     }
-//   })();
-// }
+  window.scrollBy({
+    top: lastCard.offsetTop + containerRef.clientHeight,
+    // top: containerRef.scrollHeight - containerRef.clientHeight,
+    // lastCard.scrollTop = lastCard.scrollHeight - lastCard.clientHeight;
+    behavior: 'smooth',
+  });
+}
 
 function clearPage() {
   containerRef.innerHTML = '';
@@ -83,15 +77,38 @@ function clearPage() {
 function clearInput() {
   inputRef.value = '';
 }
-// function onLargeImage(url) {
-//   const instance = basicLightbox.create(`
-//     <img src="${url}" width="800" height="600">
-//     `);
-//   instance.show();
-// }
 
-// function showBigImg(evt) {
-//   if (evt.target !== evt.currentTarget) {
-//     console.log('hello');
+function onLargeImage(event) {
+  if (event.target !== event.currentTarget) {
+    // console.log(event.target);
+    const url = event.target.dataset.source;
+    console.log(url);
+    if (url) {
+      const instance = basicLightbox.create(`
+      <img src="${url}" width="800" height="600">
+  `);
+      instance.show();
+    }
+  }
+}
+
+// function scrollDown() {
+//   const lastCard = document.querySelector('.photo-card:last-child');
+//   console.log(lastCard);
+//   if (lastCard) {
+//     // console.log(lastCard.offsetTop);
+//     // let scrollHeight = Math.max(
+//     //   document.body.scrollHeight,
+//     //   document.documentElement.scrollHeight,
+//     //   document.body.offsetHeight,
+//     //   document.documentElement.offsetHeight,
+//     //   document.body.clientHeight,
+//     //   document.documentElement.clientHeight,
+//     // );
+//     // console.log(scrollHeight);
+//     window.scrollTo({
+//       top: lastCard.offsetTop,
+//       behavior: 'smooth',
+//     });
 //   }
 // }
