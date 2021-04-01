@@ -15,15 +15,16 @@ export default class NewsApiService {
       `${BASE_URL}?image_type=photo&orientation=horizontal&q=${this.searchQuery}&page=${this.page}&per_page=12&key=${KEY}`,
     )
       .then(response => {
-        if (!response.ok) {
-          throw new Error('ERROOOOORRRRRRR');
-        }
+        // if (!response.ok) {
+        //   throw new Error('ERROOOOORRRRRRR');
+        // }
         // console.dir(response);
         return response.json();
       })
       .then(({ hits }) => {
         console.log({ hits });
         this.incrementPage();
+
         // console.log(this);
         return hits;
       });

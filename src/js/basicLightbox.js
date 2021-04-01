@@ -1,4 +1,4 @@
-import * as basicLightbox from 'basiclightbox';
+// import * as basicLightbox from 'basiclightbox';
 
 // export function lightboxFunc(url) {
 //   const instance = basicLightbox.create(`
